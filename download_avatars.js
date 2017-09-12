@@ -1,12 +1,11 @@
-var request = require('request');
-var fs = require('fs');
+const request = require('request');
+const fs = require('fs');
 
-var repoO = process.argv[2];
-var repoN = process.argv[3];
-// console.log('Welcome to the GitHub Avatar Downloader!');
+const repoOwner = process.argv[2];
+const repoName = process.argv[3];
 
-var GITHUB_USER = "ahmedalani";
-var GITHUB_TOKEN = "22967f63f7c9cdde33628425b608998b83dc17ad";
+const GITHUB_USER = "ahmedalani";
+const GITHUB_TOKEN = "22967f63f7c9cdde33628425b608998b83dc17ad";
 
 function getRepoContributors(repoOwner, repoName, cb) {
   var requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
@@ -20,35 +19,12 @@ function getRepoContributors(repoOwner, repoName, cb) {
       }
     };
   request(option, function(err, response, body) {
-    // console.log('body:', JSON.parse(body));
     cb(err, JSON.parse(body))
   });
-
 }
 
 
-// getRepoContributors("jquery", "jquery", function(err, result) {
-//   console.log("Errors:", err);
-//   console.log("Result:", result);
-// });
-
-
-getRepoContributors(repoO, repoN, function(err, contributorsData) {
-
-  for (var key in contributorsData) {
-    const user = contributorsData[key];
-    if (user.login) {
-      // .pipe(fs.createWriteStream('./avatars/contributorsData.key' + '.png');
-      downloadImageByURL(user["avatar_url"], './avatars/'+user.login + '.png');
-    }
-  }
-
-
-
-});
-
 function downloadImageByURL(url, filePath) {
-  console.log('Downloading:', url, '\tto:', filePath);
   request.get(url)
     .on('error', function (err) {
       throw err;
@@ -59,8 +35,18 @@ function downloadImageByURL(url, filePath) {
     .pipe(fs.createWriteStream(filePath));
 };
 
-// downloadImageByURL('https://avatars2.githubusercontent.com/u/2741?v=3&s=466', './kvirani.jpg');
 
+getRepoContributors(repoOwner, repoName, function(err, contributorsData) {
+  if (!repoOwner || !repoName) {
+    return console.log('pass in argument after calling the function repoO and repoN');
+  }
+  for (var key in contributorsData) {
+    const user = contributorsData[key];
+    if (user.login) {
+      downloadImageByURL(user["avatar_url"], './avatars/'+user.login + '.png');
+    }
+  }
+});
 
 
 
