@@ -10,7 +10,30 @@ function getRepoContributors(repoOwner, repoName, cb) {
   console.log(requestURL);
 }
 
+var request = require('request');
+
+request('https://sytantris.github.io/http-examples/', function(err, response, body) {
+  if (err) throw err;
+  console.log('Response Status Code:', response.statusCode);
+});
+
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors:", err);
   console.log("Result:", result);
+});
+
+const option = {
+url: 'https://api.github.com/repos/jquery/jquery/contributors',
+    qs: {
+
+      access_token: GITHUB_TOKEN
+    },
+    headers: {
+      'User-Agent': 'anything'
+    }
+  };
+
+
+request(option, function(err, response, body) {
+  console.log('body:', JSON.parse(body));
 });
